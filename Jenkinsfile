@@ -6,14 +6,12 @@ pipeline {
     }
 
     stages {
-        // שלב 1: משיכת הקוד מ-Git
         stage('Code Checkout') {
             steps {
                 checkout scm
             }
         }
 
-        // שלב 2: בנייה ותיוג של האימג' ב-Docker
         stage('Docker Build+Tag') {
             steps {
                 script {
@@ -23,11 +21,9 @@ pipeline {
             }
         }
 
-        // שלב 3: העלאת האימג' ל-DockerHub
         stage('Docker Push') {
             steps {
                 script {
-                    // העברת ה-ID הישיר של ה-Credentials מ-Jenkins
                     docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-credentials-id') {
                         def dockerImage = docker.image("${IMAGE_NAME}:${BUILD_NUMBER}")
                         def dockerImageTagLatest = docker.image("${IMAGE_NAME}:latest")
@@ -39,8 +35,9 @@ pipeline {
         }
 
         stage('Deploy') {
-    steps {
-        // הוספת הדגל --validate=false ואיפוס משתנה KUBECONFIG במידת הצורך
-        sh 'kubectl apply -f deployment.yaml --validate=false'
+            steps {
+                sh 'kubectl apply -f deployment.yaml --validate=false'
+            }
+        }
     }
 }
