@@ -2,10 +2,6 @@ pipeline {
     agent any
 
     environment {
-        // המזהה של ההרשאות שהגדרת ב-Jenkins תחת Manage Credentials
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials-id')
-        
-        // שם המשתמש שלך ב-DockerHub ושם ה-Repository
         IMAGE_NAME = 'EYALMARGANI1980/flask-hello-world'
     }
 
@@ -21,8 +17,8 @@ pipeline {
         stage('Docker Build+Tag') {
             steps {
                 script {
-                    dockerImage = docker.build("${IMAGE_NAME}:${BUILD_NUMBER}")
-                    dockerImageTagLatest = docker.build("${IMAGE_NAME}:latest")
+                    def dockerImage = docker.build("${IMAGE_NAME}:${BUILD_NUMBER}")
+                    def dockerImageTagLatest = docker.build("${IMAGE_NAME}:latest")
                 }
             }
         }
@@ -31,7 +27,10 @@ pipeline {
         stage('Docker Push') {
             steps {
                 script {
-                    docker.withRegistry('https://index.docker.io/v1/', 'DOCKERHUB_CREDENTIALS') {
+                    // העברת ה-ID הישיר של ה-Credentials מ-Jenkins
+                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-credentials-id') {
+                        def dockerImage = docker.image("${IMAGE_NAME}:${BUILD_NUMBER}")
+                        def dockerImageTagLatest = docker.image("${IMAGE_NAME}:latest")
                         dockerImage.push("${BUILD_NUMBER}")
                         dockerImageTagLatest.push('latest')
                     }
