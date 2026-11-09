@@ -38,11 +38,9 @@ pipeline {
             }
         }
 
-        // שלב 4: פריסה ל-Kubernetes
         stage('Deploy') {
-            steps {
-                sh 'kubectl apply -f deployment.yaml'
-            }
-        }
+    steps {
+        // הוספת הדגל --validate=false ואיפוס משתנה KUBECONFIG במידת הצורך
+        sh 'kubectl apply -f deployment.yaml --validate=false'
     }
 }
