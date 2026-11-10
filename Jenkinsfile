@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         IMAGE_NAME = 'eyalmargani1980/flask-hello-world'
+        KUBECONFIG = '/var/jenkins_home/.kube/config'
     }
 
     stages {
@@ -36,7 +37,7 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                sh 'kubectl apply -f deployment.yaml --validate=false'
+                sh 'kubectl apply -f deployment.yaml'
             }
         }
     }
